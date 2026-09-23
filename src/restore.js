@@ -3,6 +3,7 @@ const { execSync } = require('child_process');
 const cliProgress = require('cli-progress');
 const chalk = require('chalk');
 const { runCommand } = require('./utils');
+const { buildSummaryRows, printSummaryTable, promptChoice } = require('./ui');
 
 async function runRestore() {
   if (!fs.existsSync('win-sync-setup.json')) {
@@ -19,6 +20,24 @@ async function runRestore() {
 
   if (totalPackages === 0) {
     console.log(chalk.yellow('No packages to restore.'));
+    return;
+  }
+
+  console.log(chalk.bold('\nThis setup contains:\n'));
+  printSummaryTable(buildSummaryRows({
+    winget: data.winget?.length || 0,
+    npm: data.npm?.length || 0,
+    pip: data.pip?.length || 0,
+    manual: data.manual_apps?.length || 0
+  }, 'restore'));
+
+  const action = await promptChoice('Ready to restore your setup. How would you like to proceed?', [
+    { name: chalk.green('  (P) Proceed'), value: 'proceed' },
+    { name: chalk.yellow('  (C) Cancel'), value: 'cancel' }
+  ]);
+
+  if (action !== 'proceed') {
+    console.log(chalk.yellow('\n🚫 Cancelled — no changes were made.'));
     return;
   }
 
