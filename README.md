@@ -21,9 +21,11 @@ npm link
 
 ### Backup
 
-Scans your machine for installed applications and saves them to `win-sync-setup.json`:
+Scan your machine for installed applications. Just run `win-sync` — the backup scan starts automatically (this is the same as `win-sync backup`):
 
 ```bash
+win-sync
+# or
 win-sync backup
 ```
 
@@ -32,6 +34,14 @@ This will detect:
 - **NPM global packages**
 - **PIP packages** (Python)
 - **Manual apps** - Applications installed outside Winget (found via Windows Registry)
+
+After scanning, choose what to do with the setup:
+
+- **(B) Backup (JSON)** - save everything, including manual apps, to `win-sync-setup.json`
+- **(M) Save as Markdown only** - generate a human-readable `win-sync-setup.md`
+- **(A) Save as Both (JSON + Markdown)** - write both files
+- **(S) Save Auto-Restorable Only (exclude manual apps)** - JSON backup without manual apps
+- **(D) Discard and exit** - save nothing
 
 Apps not available in Winget are listed under `manual_apps` and must be downloaded manually after restore.
 
@@ -62,6 +72,10 @@ The backup creates a `win-sync-setup.json` file with this structure:
   "exportedAt": "2024-01-15T10:30:00.000Z"
 }
 ```
+
+### Markdown Export
+
+Choosing **(M)** or **(A)** at the backup prompt also writes `win-sync-setup.md` — a human-readable snapshot with a summary table and per-category: Winget, NPM, PIP, and manual apps. Open it in your editor or commit it to GitHub for documentation.
 
 ## Requirements
 
