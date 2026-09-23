@@ -1,0 +1,30 @@
+{
+  "name": "win-sync",
+  "version": "1.0.0",
+  "description": "CLI tool to backup and restore Windows development environment (Winget, NPM, PIP)",
+  "main": "index.js",
+  "bin": {
+    "win-sync": "./index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "windows",
+    "backup",
+    "restore",
+    "winget",
+    "npm",
+    "pip",
+    "cli"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "cli-progress": "^3.12.0",
+    "commander": "^15.0.0",
+    "ora": "^5.4.1"
+  }
+}
