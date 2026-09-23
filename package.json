@@ -7,7 +7,7 @@
     "win-sync": "./index.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --test"
   },
   "keywords": [
     "windows",
@@ -24,7 +24,9 @@
   "dependencies": {
     "chalk": "^4.1.2",
     "cli-progress": "^3.12.0",
+    "cli-table3": "^0.6.5",
     "commander": "^15.0.0",
+    "inquirer": "^8.2.6",
     "ora": "^5.4.1"
   }
 }
