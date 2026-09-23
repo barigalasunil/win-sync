@@ -3,6 +3,7 @@
 const { program } = require('commander');
 const { runBackup } = require('./src/backup');
 const { runRestore } = require('./src/restore');
+const { maximizeTerminal, printBanner } = require('./src/banner');
 
 program
   .name('win-sync')
@@ -10,8 +11,8 @@ program
   .description('CLI tool to backup and restore Windows development environment (Winget, NPM, PIP)');
 
 program
-  .command('backup')
-  .description('Scan machine for installed apps and save to JSON')
+  .command('backup', { isDefault: true })
+  .description('Scan machine for installed apps and save to JSON or Markdown')
   .action(async () => {
     await runBackup();
   });
@@ -22,5 +23,8 @@ program
   .action(async () => {
     await runRestore();
   });
+
+maximizeTerminal();
+printBanner();
 
 program.parse(process.argv);
