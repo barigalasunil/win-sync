@@ -11,9 +11,6 @@
 
 > Backup and restore your entire Windows development environment in one command — never lose your setup again.
 
-[![License](https://img.shields.io/github/license/barigalasunil/win-sync)](LICENSE)
-[![Release](https://img.shields.io/github/v/release/barigalasunil/win-sync?color=blue)](https://github.com/barigalasunil/win-sync/releases)
-[![Issues](https://img.shields.io/github/issues/barigalasunil/win-sync)](https://github.com/barigalasunil/win-sync/issues)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org)
 [![OS](https://img.shields.io/badge/Windows-10%2F11-0078d6)](https://www.microsoft.com/windows)
 
