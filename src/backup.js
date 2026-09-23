@@ -17,6 +17,31 @@ function buildBackupPayload(data, includeManual) {
   };
 }
 
+function buildWingetVersions(packages) {
+  const versions = {};
+  if (Array.isArray(packages)) {
+    packages.forEach(pkg => {
+      if (pkg.PackageIdentifier && pkg.Version) {
+        versions[pkg.PackageIdentifier] = pkg.Version;
+      }
+    });
+  }
+  return versions;
+}
+
+function buildNpmVersions(dependencies) {
+  const versions = {};
+  if (dependencies && typeof dependencies === 'object') {
+    Object.keys(dependencies).forEach(name => {
+      const dep = dependencies[name];
+      if (name !== 'npm' && dep && dep.version) {
+        versions[name] = dep.version;
+      }
+    });
+  }
+  return versions;
+}
+
 async function runBackup() {
   const wingetPackages = [];
   const npmPackages = [];
@@ -154,4 +179,4 @@ async function runBackup() {
   }
 }
 
-module.exports = { runBackup, buildBackupPayload };
+module.exports = { runBackup, buildBackupPayload, buildWingetVersions, buildNpmVersions };
