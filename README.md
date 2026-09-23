@@ -1,3 +1,12 @@
+```text
+██╗    ██╗██╗███╗   ██╗      ███████╗██╗   ██╗███╗   ██╗ ██████╗
+██║    ██║██║████╗  ██║      ██╔════╝╚██╗ ██╔╝████╗  ██║██╔════╝
+██║ █╗ ██║██║██╔██╗ ██║█████╗███████╗ ╚████╔╝ ██╔██╗ ██║██║
+██║███╗██║██║██║╚██╗██║╚════╝╚════██║  ╚██╔╝  ██║╚██╗██║██║
+╚███╔███╔╝██║██║ ╚████║      ███████║   ██║   ██║ ╚████║╚██████╗
+ ╚══╝╚══╝ ╚═╝╚═╝  ╚═══╝      ╚══════╝   ╚═╝   ╚═╝  ╚═══╝ ╚═════╝
+```
+
 # ⚡ win-sync
 
 > Backup and restore your entire Windows development environment in one command — never lose your setup again.
@@ -103,20 +112,15 @@ win-sync restore
 - **NPM** and **PIP** packages are installed individually with a progress bar
 - **Manual apps** are listed again so you remember to download them
 
-## 🖥️ Output Example
+## 📸 Demo
 
 Here's what running `win-sync` looks like:
 
+![win-sync backup demo](./assets/demo-screenshot.png)
+
+The scan reports every category, flags manual apps, and prompts you for how to save your setup:
+
 ```
- _    _           _   _____ _ _
-| |  | |         | | /  ___(_) |
-| |  | | ___  ___| | \ `--. _| |_
-| |/\| |/ _ \/ __| |  `--. \ | __|
-\  /\  /  __/\__ \_| /\__/ / | |_
- \/  \/ \___||___(_) \____/|_|\__|
-
-Windows Development Environment Backup & Restore
-
 ✔ Scanning Winget packages...
 ✔ Scanning NPM global packages...
 ✔ Scanning PIP packages...

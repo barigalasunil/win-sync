@@ -1,21 +1,19 @@
 const chalk = require('chalk');
 const { execFileSync } = require('child_process');
 
-const BANNER_LINES = [
-  ' _    _           _   _____ _ _     ',
-  '| |  | |         | | /  ___(_) |    ',
-  '| |  | | ___  ___| | \\ `--. _| |_   ',
-  '| |/\\| |/ _ \\/ __| |  `--. \\ | __|  ',
-  '\\  /\\  /  __/\\__ \\_| /\\__/ / | |_    ',
-  ' \\/  \\/ \\___||___(_) \\____/|_|\\__|   '
-];
-
 function buildBannerText() {
-  return BANNER_LINES.join('\n');
+  return [
+    '██╗    ██╗██╗███╗   ██╗      ███████╗██╗   ██╗███╗   ██╗ ██████╗',
+    '██║    ██║██║████╗  ██║      ██╔════╝╚██╗ ██╔╝████╗  ██║██╔════╝',
+    '██║ █╗ ██║██║██╔██╗ ██║█████╗███████╗ ╚████╔╝ ██╔██╗ ██║██║     ',
+    '██║███╗██║██║██║╚██╗██║╚════╝╚════██║  ╚██╔╝  ██║╚██╗██║██║     ',
+    '╚███╔███╔╝██║██║ ╚████║      ███████║   ██║   ██║ ╚████║╚██████╗',
+    ' ╚══╝╚══╝ ╚═╝╚═╝  ╚═══╝      ╚══════╝   ╚═╝   ╚═╝  ╚═══╝ ╚═════╝'
+  ].join('\n');
 }
 
 function printBanner() {
-  console.log(chalk.cyan(buildBannerText()));
+  console.log(chalk.green.bold(buildBannerText()));
   console.log(chalk.dim('Windows Development Environment Backup & Restore'));
   console.log('');
 }

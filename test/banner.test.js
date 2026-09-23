@@ -4,9 +4,9 @@ const { buildBannerText, maximizeTerminal, printBanner } = require('../src/banne
 
 test('buildBannerText returns the win-sync ASCII art', () => {
   const text = buildBannerText();
-  assert.match(text, /_    _           _   _____ _ _/);
+  assert.match(text, /█╗    ██╗██╗███╗   ██╗/);
+  assert.match(text, /WIN-SYNC|╚════╝/);
   assert.equal(text.split('\n').length, 6);
-  assert.ok(text.includes('\\'), 'art must contain backslash strokes');
 });
 
 test('maximizeTerminal does not throw', () => {
