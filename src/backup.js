@@ -5,6 +5,7 @@ const { execSync } = require('child_process');
 const ora = require('ora');
 const chalk = require('chalk');
 const { runCommand } = require('./utils');
+const { buildSummaryRows, printSummaryTable, printManualAppsTable, promptChoice } = require('./ui');
 
 function buildBackupPayload(data, includeManual) {
   return {
@@ -112,23 +113,44 @@ async function runBackup() {
     spinnerManual.fail(chalk.red('Failed to scan Registry for manual apps'));
   }
 
-  const backupData = {
+  console.log(chalk.bold('\nScan complete — here\'s what was found:\n'));
+  printSummaryTable(buildSummaryRows({
+    winget: wingetPackages.length,
+    npm: npmPackages.length,
+    pip: pipPackages.length,
+    manual: manualApps.length
+  }, 'backup'));
+
+  if (manualApps.length > 0) {
+    console.log(chalk.bold('\nManual apps — must be downloaded after restore:\n'));
+    printManualAppsTable(manualApps);
+  }
+
+  const action = await promptChoice('What would you like to do with this setup?', [
+    { name: chalk.green('  (B) Backup'), value: 'backup' },
+    { name: chalk.cyan('  (S) Save Managed Only'), value: 'managed' },
+    { name: chalk.yellow('  (D) Discard'), value: 'discard' }
+  ]);
+
+  if (action === null || action === 'discard') {
+    console.log(chalk.yellow('\n🚫 Discarded — nothing was saved.'));
+    return;
+  }
+
+  const includeManual = action === 'backup';
+  const payload = buildBackupPayload({
     winget: wingetPackages,
     npm: npmPackages,
     pip: pipPackages,
-    manual_apps: manualApps,
-    exportedAt: new Date().toISOString()
-  };
+    manualApps
+  }, includeManual);
 
-  fs.writeFileSync('win-sync-setup.json', JSON.stringify(backupData, null, 2));
+  fs.writeFileSync('win-sync-setup.json', JSON.stringify(payload, null, 2));
   console.log(chalk.green('\n✓ Backup saved to win-sync-setup.json'));
 
-  if (manualApps.length > 0) {
-    console.log(chalk.bold.red('\n⚠  MANUAL APPS DETECTED - These are NOT in Winget and must be downloaded manually:'));
-    manualApps.forEach(app => {
-      console.log(chalk.red(`  - ${app.name} (v${app.version}) by ${app.publisher}`));
-    });
-    console.log(chalk.yellow('\nPlease download and install these manually after restore.'));
+  if (includeManual && manualApps.length > 0) {
+    console.log(chalk.bold.red('\n⚠  MANUAL APPS DETECTED - These are NOT in Winget and must be downloaded manually.'));
+    console.log(chalk.yellow('Please download and install these manually after restore.'));
   }
 }
 
