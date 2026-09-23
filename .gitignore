@@ -1,4 +1,5 @@
 ﻿node_modules/
 *.log
 win-sync-setup.json
+win-sync-setup.md
 .worktrees/

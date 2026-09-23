@@ -6,6 +6,7 @@ const ora = require('ora');
 const chalk = require('chalk');
 const { runCommand } = require('./utils');
 const { buildSummaryRows, printSummaryTable, printManualAppsTable, promptChoice } = require('./ui');
+const { generateMarkdown } = require('./markdown-generator');
 
 function buildBackupPayload(data, includeManual) {
   return {
@@ -47,6 +48,8 @@ async function runBackup() {
   const npmPackages = [];
   const pipPackages = [];
   const manualApps = [];
+  const wingetVersions = {};
+  const npmVersions = {};
 
   const tempDir = os.tmpdir();
   const wingetExportPath = path.join(tempDir, 'winget-export.json');
@@ -57,17 +60,20 @@ async function runBackup() {
     if (fs.existsSync(wingetExportPath)) {
       const content = fs.readFileSync(wingetExportPath, 'utf8');
       const data = JSON.parse(content);
+      const wingetEntries = [];
       if (data.Sources && data.Sources.length > 0) {
         data.Sources.forEach(source => {
           if (source.Packages && source.Packages.length > 0) {
             source.Packages.forEach(pkg => {
               if (pkg.PackageIdentifier) {
-                wingetPackages.push(pkg.PackageIdentifier);
+                wingetEntries.push(pkg);
               }
             });
           }
         });
       }
+      wingetPackages.push(...wingetEntries.map(pkg => pkg.PackageIdentifier));
+      Object.assign(wingetVersions, buildWingetVersions(wingetEntries));
       fs.unlinkSync(wingetExportPath);
     }
     spinnerWinget.succeed(chalk.green(`Found ${wingetPackages.length} Winget packages`));
@@ -80,6 +86,7 @@ async function runBackup() {
     const output = runCommand('npm list -g --depth=0 --json');
     if (output) {
       const data = JSON.parse(output);
+      Object.assign(npmVersions, buildNpmVersions(data.dependencies));
       if (data.dependencies) {
         Object.keys(data.dependencies).forEach(name => {
           if (name !== 'npm') {
@@ -152,9 +159,11 @@ async function runBackup() {
   }
 
   const action = await promptChoice('What would you like to do with this setup?', [
-    { name: chalk.green('  (B) Backup'), value: 'backup' },
-    { name: chalk.cyan('  (S) Save Managed Only'), value: 'managed' },
-    { name: chalk.yellow('  (D) Discard'), value: 'discard' }
+    { name: chalk.green('  (B) Backup (JSON)'), value: 'json' },
+    { name: chalk.cyan('  (M) Save as Markdown only'), value: 'markdown' },
+    { name: chalk.magenta('  (A) Save as Both (JSON + Markdown)'), value: 'both' },
+    { name: chalk.yellow('  (S) Save Auto-Restorable Only (exclude manual apps)'), value: 'managed' },
+    { name: chalk.red('  (D) Discard and exit'), value: 'discard' }
   ]);
 
   if (action === null || action === 'discard') {
@@ -162,7 +171,9 @@ async function runBackup() {
     return;
   }
 
-  const includeManual = action === 'backup';
+  const wantsJson = action === 'json' || action === 'both' || action === 'managed';
+  const wantsMarkdown = action === 'markdown' || action === 'both';
+  const includeManual = action !== 'managed';
   const payload = buildBackupPayload({
     winget: wingetPackages,
     npm: npmPackages,
@@ -170,10 +181,30 @@ async function runBackup() {
     manualApps
   }, includeManual);
 
-  fs.writeFileSync('win-sync-setup.json', JSON.stringify(payload, null, 2));
-  console.log(chalk.green('\n✓ Backup saved to win-sync-setup.json'));
+  let savedJson = false;
+  if (wantsJson) {
+    try {
+      fs.writeFileSync('win-sync-setup.json', JSON.stringify(payload, null, 2));
+      console.log(chalk.green(`\n✓ JSON saved to: ${path.join(process.cwd(), 'win-sync-setup.json')}`));
+      savedJson = true;
+    } catch (error) {
+      console.log(chalk.red(`\n✗ Failed to save JSON: ${error.message}`));
+    }
+  }
 
-  if (includeManual && manualApps.length > 0) {
+  if (wantsMarkdown) {
+    try {
+      const markdown = generateMarkdown(payload, {
+        versions: { winget: wingetVersions, npm: npmVersions }
+      });
+      fs.writeFileSync('win-sync-setup.md', markdown);
+      console.log(chalk.green(`\n✓ Markdown saved to: ${path.join(process.cwd(), 'win-sync-setup.md')}`));
+    } catch (error) {
+      console.log(chalk.red(`\n✗ Failed to save Markdown: ${error.message}`));
+    }
+  }
+
+  if (savedJson && includeManual && manualApps.length > 0) {
     console.log(chalk.bold.red('\n⚠  MANUAL APPS DETECTED - These are NOT in Winget and must be downloaded manually.'));
     console.log(chalk.yellow('Please download and install these manually after restore.'));
   }
