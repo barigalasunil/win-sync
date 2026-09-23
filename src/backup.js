@@ -6,6 +6,16 @@ const ora = require('ora');
 const chalk = require('chalk');
 const { runCommand } = require('./utils');
 
+function buildBackupPayload(data, includeManual) {
+  return {
+    winget: data.winget,
+    npm: data.npm,
+    pip: data.pip,
+    manual_apps: includeManual ? data.manualApps : [],
+    exportedAt: new Date().toISOString()
+  };
+}
+
 async function runBackup() {
   const wingetPackages = [];
   const npmPackages = [];
@@ -122,4 +132,4 @@ async function runBackup() {
   }
 }
 
-module.exports = { runBackup };
+module.exports = { runBackup, buildBackupPayload };
